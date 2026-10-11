@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clash of Capitals — website
 
-## Getting Started
+The official website for **Clash of Capitals**, a multiplayer property-trading board game.
+Next.js (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Lucide.
 
-First, run the development server:
+## Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Marketing homepage |
+| `/about` | About the game |
+| `/privacy` | Privacy policy (linked from the Play listing and the app) |
+| `/terms` | Terms & conditions |
+| `/delete-account` | Account deletion instructions and email request route |
+| `/contact` | Support |
+| `/robots.txt`, `/sitemap.xml` | Generated from `app/robots.ts` and `app/sitemap.ts` |
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run lint
+npx tsc --noEmit
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything that changes at launch is in [`lib/site.ts`](lib/site.ts) or the environment
+(see [`.env.example`](.env.example)).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Setting | Where | Notes |
+| --- | --- | --- |
+| Production domain | `NEXT_PUBLIC_SITE_URL` | Canonical URLs, Open Graph, robots, sitemap. On Vercel it falls back to the project's production domain. |
+| Google Play listing | `NEXT_PUBLIC_PLAY_STORE_URL` | Must start with `https://play.google.com/store/apps/details`. While unset, download buttons lead to a "Coming soon to Google Play" state. |
+| Support email, brand name | `lib/site.ts` | Used by every page. |
+| Legal effective date | `lib/site.ts` → `legalEffectiveDate` | Update whenever a policy changes. |
 
-## Learn More
+Search engines are told not to index the site unless it is a Vercel **production** deployment
+or `NEXT_PUBLIC_SITE_URL` is set, so previews stay out of search results.
 
-To learn more about Next.js, take a look at the following resources:
+## Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/                 Routes, metadata, robots, sitemap, global styles (design tokens)
+components/          Shared UI: header, footer, buttons, page layouts, motion helpers
+components/home/     Homepage visuals: the interactive board and the feature demos
+lib/site.ts          Brand, contact, URLs and navigation
+public/              Brand assets from the mobile app, and the social sharing image
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Design tokens (colours, radii, shadows, motion, widths) are CSS variables at the top of
+`app/globals.css`, mapped to Tailwind names in the `@theme` block below them.
 
-## Deploy on Vercel
+## Keeping the site truthful
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The rules, prices and board on the homepage, and every statement in the privacy policy and on the
+delete-account page, were written from the mobile app's source. When the app changes its data
+practices, account flow, game modes or voice chat, update the matching page here.
